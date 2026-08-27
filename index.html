@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aerodrome Warning Generator — Stamet H. Asan Sampit</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    
+    <div class="sidebar-brand">
+      <img src="assets\Logo_BMKG_(2010).png" alt="Logo BMKG" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Aerodrome Warning</span>
+        <span class="brand-sub">Stamet H. Asan Sampit</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-label">Menu</span>
+      <button class="nav-item active" data-view="form-view" type="button">
+        <i class="bi bi-pencil-square"></i>
+        <span>Buat Warning</span>
+      </button>
+      <button class="nav-item" data-view="form-view-cancel" type="button">
+        <i class="bi bi-x-circle"></i>
+        <span>Pembatalan Warning</span>
+      </button>
+      <button class="nav-item" data-view="history-view" type="button">
+        <i class="bi bi-clock-history"></i>
+        <span>Riwayat</span>
+        <span class="nav-badge" id="historyCount">0</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="station-code">
+        <div>
+          <div class="station-icao" id="sidebarIcaoCode">WAGS</div>
+          <div class="station-name">Agvenditan Laprima</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <button class="sidebar-toggle d-lg-none" id="sidebarToggle" type="button" aria-label="Buka menu">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- ================================================================ -->
+    <!-- FORM VIEW — PEMBUATAN AERODROME WARNING                          -->
+    <!-- ================================================================ -->
+    <section class="view active" id="form-view">
+
+      <header class="view-header">
+        <div>
+          <h1>Aerodrome Warning</h1>
+         </div>
+        <div class="header-actions">
+          <button class="btn btn-outline-primary btn-sm" id="btnReset" type="button">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </button>
+        </div>
+      </header>
+
+      <div class="workspace">
+
+        <!-- FORM COLUMN -->
+        <div class="form-column">
+
+          <form id="warningForm" autocomplete="off">
+
+            <div class="panel">
+              <div class="panel-head">
+                <i class="bi bi-info-circle"></i>
+                <h2>Informasi Warning</h2>
+              </div>
+              <div class="panel-body">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <label class="form-label">CCCC (ICAO Station)</label>
+                    <input type="text" class="form-control text-uppercase" id="cccc" maxlength="4" value="WAGS" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Nomor Warning <span class="hint">[n]n</span></label>
+                    <input type="text" class="form-control" id="nomor" placeholder="1" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Valid From <span class="hint">DDHHmm</span></label>
+                    <input type="text" class="form-control font-mono" id="validFrom" placeholder="102300" maxlength="6" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Valid To <span class="hint">DDHHmm</span></label>
+                    <input type="text" class="form-control font-mono" id="validTo" placeholder="110100" maxlength="6" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Jam Pembuatan <span class="hint">DDHHmm, utk header WOID44</span></label>
+                    <input type="text" class="form-control font-mono" id="jamPembuatan" placeholder="102305" maxlength="6">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <i class="bi bi-tornado"></i>
+                <h2>Fenomena &amp; Sumber</h2>
+              </div>
+              <div class="panel-body">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <label class="form-label">Phenomena</label>
+                    <select class="form-select" id="phenomena" required>
+                      <option value="FU">FU — Asap</option>
+                      <option value="TS">TS — Badai Guntur</option>
+                      <option value="TSRA">TSRA — Hujan disertai Guntur</option>
+                      <option value="MOD RA">MOD RA — Hujan Sedang</option>
+                      <option value="HVY RA">HVY RA — Hujan Lebat</option>
+                      <option value="FG">FG — Kabut</option>
+                      <option value="BR">BR — Halimun</option>
+                      <option value="SFC WSPD">SFC WSPD — Angin Kencang</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Source</label>
+                    <select class="form-select" id="source" required>
+                      <option value="OBS">OBS — Observasi</option>
+                      <option value="FCST">FCST — Prakiraan</option>
+                    </select>
+                  </div>
+
+                  <div class="col-6 wind-field d-none">
+                    <label class="form-label">Wind Speed <span class="hint">KT — nn[n]KT</span></label>
+                    <input type="number" class="form-control" id="windSpeed" placeholder="20" min="0">
+                  </div>
+                  <div class="col-6 wind-field d-none">
+                    <label class="form-label">Max Wind Speed <span class="hint">KT — MAX nn[n]</span></label>
+                    <input type="number" class="form-control" id="windSpeedMax" placeholder="32" min="0">
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label">Observation Time <span class="hint">e.g. 2300Z</span></label>
+                    <input type="text" class="form-control font-mono" id="obsTime" placeholder="2300Z" maxlength="5" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Intensity</label>
+                    <select class="form-select" id="intensity" required>
+                      <option value="INTSF">INTSF — Menguat</option>
+                      <option value="WKN">WKN — Melemah</option>
+                      <option value="NC">NC — Tidak Ada Perubahan</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <i class="bi bi-person-badge"></i>
+                <h2>Forecaster</h2>
+              </div>
+              <div class="panel-body">
+                <label class="form-label">Forecaster On Duty</label>
+                <select class="form-select" id="forecaster" required>
+                  <option value="">Pilih Forecaster</option>
+                  <option value="Adinda Windy Onthoni, S.Tr.Met">Adinda Windy Onthoni, S.Tr.Met</option>
+                  <option value="Alfa Centauri Kusumawardhani, S.Tr">Alfa Centauri Kusumawardhani, S.Tr</option>
+                  <option value="Deby Cindi">Deby Cindi</option>
+                  <option value="Haris Wijayanto">Haris Wijayanto</option>
+                  <option value="Hendrianto">Hendrianto</option>
+                  <option value="Ibnu Hasan Ali, S.Tr.Met">Ibnu Hasan Ali, S.Tr.Met</option>
+                  <option value="Lyla Affifah Harulbadrizza, S.Tr">Lyla Affifah Harulbadrizza, S.Tr</option>
+                  <option value="M. Inggit Rizki Ansori, S.Tr.Met">M. Inggit Rizki Ansori, S.Tr.Met</option>
+                  <option value="Mitra Dwina Hutauruk, S.Tr">Mitra Dwina Hutauruk, S.Tr</option>
+                  <option value="Mulyono Leo Nardo, SP">Mulyono Leo Nardo, SP</option>
+                  <option value="Nadine Ayasha, S.Tr.Met">Nadine Ayasha, S.Tr.Met</option>
+                  <option value="Rahmat Wahidin Abdi, S.Tr">Rahmat Wahidin Abdi, S.Tr</option>
+                  <option value="Rizaldo Raditya Pratama, S.Tr.Met">Rizaldo Raditya Pratama, S.Tr.Met</option>
+                  <option value="Suci Priatin Ningsih, S.Tr">Suci Priatin Ningsih, S.Tr</option>
+                  <option value="__custom__">+ Tambah Forecaster Lain...</option>
+                </select>
+                <div class="forecaster-actions mt-2">
+                  <button class="btn btn-outline-secondary btn-sm" id="editForecaster" type="button" disabled>
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" id="deleteForecaster" type="button" disabled>
+                    <i class="bi bi-trash3"></i> Hapus
+                  </button>
+                </div>
+                <input
+                    type="text"
+                    class="form-control mt-2 d-none"
+                    id="customForecaster"
+                    placeholder="Masukkan nama forecaster">
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+
+        <!-- PREVIEW COLUMN -->
+        <div class="preview-column">
+
+          <div class="panel icao-panel">
+            <div class="panel-head">
+              <i class="bi bi-braces"></i>
+              <h2>ICAO Message</h2>
+              <button class="btn btn-icon" id="btnCopyIcao" type="button" title="Salin ICAO Message">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+            <div class="panel-body">
+              <pre class="icao-output" id="icaoOutput">—</pre>
+            </div>
+          </div>
+
+          <div class="panel document-panel">
+            <div class="panel-head">
+              <i class="bi bi-file-earmark-text"></i>
+              <h2>Pratinjau Dokumen</h2>
+              <div class="panel-actions">
+                <button class="btn btn-outline-secondary btn-sm" id="btnPrint" type="button">
+                  <i class="bi bi-printer"></i> Print / PDF
+                </button>
+                <button class="btn btn-primary btn-sm" id="btnSave" type="button">
+                  <i class="bi bi-save"></i> Simpan
+                </button>
+              </div>
+            </div>
+            <div class="panel-body document-scroll">
+              <div class="doc-sheet" id="printArea">
+
+                <div class="doc-header">
+                  <div class="doc-logo-col">
+                    <img src="assets\Logo_BMKG_(2010).png" alt="Logo BMKG" class="doc-logo">
+                  </div>
+                  <div class="doc-header-text">
+                    <div class="doc-org-line1">BADAN METEOROLOGI KLIMATOLOGI DAN GEOFISIKA</div>
+                    <div class="doc-org-line2">STASIUN METEOROLOGI KELAS II H. ASAN</div>
+                    <div class="doc-org-line3">SAMPIT - KOTAWARINGIN TIMUR, KALIMANTAN TENGAH</div>
+                    <div class="doc-org-address">Jl. Samekto, Baamang Hulu, Sampit, Kalimantan Tengah Telp (0531) 34363</div>
+                  </div>
+                </div>
+
+                <div class="doc-header-rule">
+                  <div class="rule-thin"></div>
+                  <div class="rule-thick"></div>
+                </div>
+
+                <div class="doc-title">
+                  <div class="doc-title-line1"><em>AERODROME WARNING</em>&nbsp;BANDAR UDARA H. ASAN</div>
+                  <div class="doc-title-line2">SAMPIT - KOTAWARINGIN TIMUR</div>
+                </div>
+
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th rowspan="2">CCCC</th>
+                      <th rowspan="2">AD WRNG</th>
+                      <th rowspan="2">[n]n</th>
+                      <th rowspan="2">VALID</th>
+                      <th rowspan="2">YYG₁G₁g₁g₁/YYG₂G₂g₂g₂</th>
+                      <th rowspan="2">Phenomena</th>
+                      <th colspan="2">SFC WSPD</th>
+                      <th rowspan="2">source of<br>AD</th>
+                      <th rowspan="2">AT GGggZ</th>
+                      <th rowspan="2">Phenomena<br>Intensity</th>
+                    </tr>
+                    <tr>
+                      <th>nn[n]KT</th>
+                      <th>MAX nn[n]</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="docCccc">WAGS</td>
+                      <td>AD WRNG</td>
+                      <td id="docNomor">—</td>
+                      <td>VALID</td>
+                      <td id="docValid" class="font-mono">—</td>
+                      <td id="docPhenomena">—</td>
+                      <td id="docWindSpeed"></td>
+                      <td id="docWindSpeedMax"></td>
+                      <td id="docSource">—</td>
+                      <td id="docObsTime" class="font-mono">—</td>
+                      <td id="docIntensity">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="doc-section-title">ISI BERITA :</div>
+                <div class="doc-narasi-box" id="docNarasi">Lengkapi form di sebelah kiri untuk menghasilkan narasi berita secara otomatis.</div>
+
+                <div class="doc-signature-row">
+                  <div class="doc-signature">
+                    <span>Forecaster On Duty,</span>
+                    <b id="docForecaster">—</b>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FORM VIEW — PEMBATALAN / CNL AD WRNG                              -->
+    <!-- ================================================================ -->
+    <section class="view" id="form-view-cancel">
+
+      <header class="view-header">
+        <div>
+          <h1>Pembatalan Aerodrome Warning</h1>
+          <p>Isi data pembatalan (CNL AD WRNG)</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline-primary btn-sm" id="cnlBtnReset" type="button">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </button>
+        </div>
+      </header>
+
+      <div class="workspace">
+
+        <!-- FORM COLUMN -->
+        <div class="form-column">
+
+          <form id="cnlForm" autocomplete="off">
+
+            <div class="panel">
+              <div class="panel-head">
+                <i class="bi bi-info-circle"></i>
+                <h2>Informasi Pembatalan</h2>
+              </div>
+              <div class="panel-body">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <label class="form-label">CCCC (ICAO Station)</label>
+                    <input type="text" class="form-control text-uppercase" id="cnlCccc" maxlength="4" value="WAGS" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Nomor Bulletin Ini <span class="hint">[n]n</span></label>
+                    <input type="text" class="form-control" id="cnlNomorBulletin" placeholder="2" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Nomor Warning yang Dibatalkan <span class="hint">CNL AD WRNG [n]n</span></label>
+                    <input type="text" class="form-control" id="cnlNomorDibatalkan" placeholder="1" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Valid From <span class="hint">DDHHmm — sisa periode</span></label>
+                    <input type="text" class="form-control font-mono" id="cnlValidFrom" placeholder="100900" maxlength="6" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Valid To <span class="hint">DDHHmm — sisa periode</span></label>
+                    <input type="text" class="form-control font-mono" id="cnlValidTo" placeholder="101040" maxlength="6" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Jam Pembuatan <span class="hint">DDHHmm, utk header WOID44</span></label>
+                    <input type="text" class="form-control font-mono" id="cnlJamPembuatan" placeholder="100900" maxlength="6">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <i class="bi bi-person-badge"></i>
+                <h2>Forecaster</h2>
+              </div>
+              <div class="panel-body">
+                <label class="form-label">Forecaster On Duty</label>
+                <select class="form-select" id="cnlForecaster" required>
+                  <option value="">Pilih Forecaster</option>
+                  <option value="Adinda Windy Onthoni, S.Tr.Met">Adinda Windy Onthoni, S.Tr.Met</option>
+                  <option value="Alfa Centauri Kusumawardhani, S.Tr">Alfa Centauri Kusumawardhani, S.Tr</option>
+                  <option value="Deby Cindi">Deby Cindi</option>
+                  <option value="Haris Wijayanto">Haris Wijayanto</option>
+                  <option value="Hendrianto">Hendrianto</option>
+                  <option value="Ibnu Hasan Ali, S.Tr.Met">Ibnu Hasan Ali, S.Tr.Met</option>
+                  <option value="Lyla Affifah Harulbadrizza, S.Tr">Lyla Affifah Harulbadrizza, S.Tr</option>
+                  <option value="M. Inggit Rizki Ansori, S.Tr.Met">M. Inggit Rizki Ansori, S.Tr.Met</option>
+                  <option value="Mitra Dwina Hutauruk, S.Tr">Mitra Dwina Hutauruk, S.Tr</option>
+                  <option value="Mulyono Leo Nardo, SP">Mulyono Leo Nardo, SP</option>
+                  <option value="Nadine Ayasha, S.Tr.Met">Nadine Ayasha, S.Tr.Met</option>
+                  <option value="Rahmat Wahidin Abdi, S.Tr">Rahmat Wahidin Abdi, S.Tr</option>
+                  <option value="Rizaldo Raditya Pratama, S.Tr.Met">Rizaldo Raditya Pratama, S.Tr.Met</option>
+                  <option value="Suci Priatin Ningsih, S.Tr">Suci Priatin Ningsih, S.Tr</option>
+                  <option value="__custom__">+ Tambah Forecaster Lain...</option>
+                </select>
+                <div class="forecaster-actions mt-2">
+                  <button class="btn btn-outline-secondary btn-sm" id="editForecasterCancel" type="button" disabled>
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" id="deleteForecasterCancel" type="button" disabled>
+                    <i class="bi bi-trash3"></i> Hapus
+                  </button>
+                </div>
+                  <input
+                      type="text"
+                      class="form-control mt-2 d-none"
+                      id="customForecasterCancel"
+                      placeholder="Masukkan nama forecaster">
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+
+        <!-- PREVIEW COLUMN -->
+        <div class="preview-column">
+
+          <div class="panel icao-panel">
+            <div class="panel-head">
+              <i class="bi bi-braces"></i>
+              <h2>ICAO Message</h2>
+              <button class="btn btn-icon" id="cnlBtnCopyIcao" type="button" title="Salin ICAO Message">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+            <div class="panel-body">
+              <pre class="icao-output" id="cnlIcaoOutput">—</pre>
+            </div>
+          </div>
+
+          <div class="panel document-panel">
+            <div class="panel-head">
+              <i class="bi bi-file-earmark-text"></i>
+              <h2>Pratinjau Dokumen</h2>
+              <div class="panel-actions">
+                <button class="btn btn-outline-secondary btn-sm" id="cnlBtnPrint" type="button">
+                  <i class="bi bi-printer"></i> Print / PDF
+                </button>
+                <button class="btn btn-primary btn-sm" id="cnlBtnSave" type="button">
+                  <i class="bi bi-save"></i> Simpan
+                </button>
+              </div>
+            </div>
+            <div class="panel-body document-scroll">
+              <div class="doc-sheet" id="cnlPrintArea">
+
+                <div class="doc-header">
+                  <div class="doc-logo-col">
+                    <img src="assets\Logo_BMKG_(2010).png" alt="Logo BMKG" class="doc-logo">
+                  </div>
+                  <div class="doc-header-text">
+                    <div class="doc-org-line1">BADAN METEOROLOGI KLIMATOLOGI DAN GEOFISIKA</div>
+                    <div class="doc-org-line2">STASIUN METEOROLOGI KELAS II H. ASAN</div>
+                    <div class="doc-org-line3">SAMPIT - KOTAWARINGIN TIMUR, KALIMANTAN TENGAH</div>
+                    <div class="doc-org-address">Jl. Samekto, Baamang Hulu, Sampit, Kalimantan Tengah Telp (0531) 34363</div>
+                  </div>
+                </div>
+
+                <div class="doc-header-rule">
+                  <div class="rule-thin"></div>
+                  <div class="rule-thick"></div>
+                </div>
+
+                <div class="doc-title">
+                  <div class="doc-title-line1">PENGAKHIRAN AERODROME WARNING BANDAR UDARA H. ASAN</div>
+                  <div class="doc-title-line2">SAMPIT - KOTAWARINGIN TIMUR</div>
+                </div>
+
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>CCCC</th>
+                      <th>AD WRNG</th>
+                      <th>[n]n</th>
+                      <th>VALID</th>
+                      <th>YYG₁G₁g₁g₁/YYG₂G₂g₂g₂</th>
+                      <th>CNL AD WARNING</th>
+                      <th>[n]n</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="cnlDocCccc">WAGS</td>
+                      <td>AD WRNG</td>
+                      <td id="cnlDocNomorBulletin">—</td>
+                      <td>VALID</td>
+                      <td id="cnlDocValid" class="font-mono">—</td>
+                      <td>CNL AD WARNING</td>
+                      <td id="cnlDocNomorDibatalkan">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="doc-section-title">ISI BERITA :</div>
+                <div class="doc-narasi-box" id="cnlDocNarasi">Lengkapi form di sebelah kiri untuk menghasilkan narasi pembatalan secara otomatis.</div>
+
+                <div class="doc-signature-row">
+                  <div class="doc-signature">
+                    <span>Forecaster On Duty,</span>
+                    <b id="cnlDocForecaster">—</b>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- HISTORY VIEW                                                      -->
+    <!-- ================================================================ -->
+    <section class="view" id="history-view">
+      <header class="view-header">
+        <div>
+          <h1>Riwayat Warning</h1>
+          <p>Daftar Aerodrome Warning &amp; Pembatalan yang pernah dibuat pada perangkat ini.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline-danger btn-sm" id="btnClearHistory" type="button">
+            <i class="bi bi-trash3"></i> Hapus Semua
+          </button>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="panel-body">
+          <div id="historyEmpty" class="history-empty">
+            <i class="bi bi-inbox"></i>
+            <p>Belum ada warning yang disimpan.</p>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="appToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="appToastBody">Berhasil.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
