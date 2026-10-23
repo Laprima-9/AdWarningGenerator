@@ -389,7 +389,7 @@ deleteForecasterCancel?.addEventListener('click', () => deleteCustomForecaster(c
     if (d.phenomena === 'SFC WSPD') {
       const ws = d.windSpeed !== '' ? d.windSpeed : '0';
       const wsMax = d.windSpeedMax !== '' ? d.windSpeedMax : '0';
-      phenomenaClause = ` angin kencang dengan kecepatan ${ws} knot dengan kecepatan angin maksimum sebesar ${wsMax} knot`;
+      phenomenaClause = ` angin kencang dengan kecepatan ${ws} knot dan kecepatan angin maksimum sebesar ${wsMax} knot`;
     } else {
       phenomenaClause = ` ${phenom.label}`;
     }
@@ -398,7 +398,7 @@ deleteForecasterCancel?.addEventListener('click', () => deleteCustomForecaster(c
     let comboClause = '';
     if (d.phenomena !== 'SFC WSPD' && d.windSpeed !== '') {
       const wsMax = d.windSpeedMax !== '' ? d.windSpeedMax : '0';
-      comboClause = ` disertai angin kencang dengan kecepatan ${d.windSpeed} knot dengan kecepatan angin maksimum sebesar ${wsMax} knot`;
+      comboClause = ` disertai angin kencang dengan kecepatan ${d.windSpeed} knot dan kecepatan angin maksimum sebesar ${wsMax} knot`;
     }
 
     const sourceLabel = SOURCE_NARASI[d.source] || 'berdasarkan pengamatan';
