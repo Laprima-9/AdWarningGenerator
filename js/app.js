@@ -344,12 +344,17 @@ deleteForecasterCancel?.addEventListener('click', () => deleteCustomForecaster(c
     const to = d.validTo || '------';
 
     let phenomPart;
+    const ws = d.windSpeed !== '' ? d.windSpeed : '';
+    const wsMax = d.windSpeedMax !== '' ? d.windSpeedMax : '';
     if (isWind) {
-      const ws = d.windSpeed !== '' ? d.windSpeed : '--';
-      const wsMax = d.windSpeedMax !== '' ? d.windSpeedMax : '--';
-      phenomPart = `SFC WSPD ${ws}KT MAX ${wsMax}`;
+      phenomPart = `SFC WSPD ${ws || '--'}KT MAX ${wsMax || '--'}`;
     } else {
-      phenomPart = d.phenomena || '—';
+      // Wind Speed dan Max Wind Speed juga ditampilkan di sandi
+      // saat fenomena utama bukan SFC WSPD, jika nilainya diisi.
+      const windDetails = [];
+      if (ws !== '') windDetails.push(`${ws}KT`);
+      if (wsMax !== '') windDetails.push(`MAX ${wsMax}`);
+      phenomPart = [d.phenomena || '—', ...windDetails].join(' ');
     }
 
     const sourcePart = d.source === 'FCST'
@@ -450,10 +455,14 @@ deleteForecasterCancel?.addEventListener('click', () => deleteCustomForecaster(c
      ============================================================ */
 
   function toggleWindFields(d) {
-    const show = d.phenomena === 'SFC WSPD';
-    els.windFields.forEach(f => f.classList.toggle('d-none', !show));
-    els.windSpeed.required = show;
-    els.windSpeedMax.required = show;
+    // Field Wind Speed dan Max Wind Speed selalu ditampilkan,
+    // termasuk saat fenomena utama bukan SFC WSPD.
+    els.windFields.forEach(f => f.classList.remove('d-none'));
+
+    // Wajib diisi hanya ketika fenomena utama adalah SFC WSPD.
+    const isWindPhenomenon = d.phenomena === 'SFC WSPD';
+    els.windSpeed.required = isWindPhenomenon;
+    els.windSpeedMax.required = isWindPhenomenon;
   }
 
   function render() {
@@ -474,8 +483,8 @@ deleteForecasterCancel?.addEventListener('click', () => deleteCustomForecaster(c
       : '—';
 
     els.docPhenomena.textContent = isWind ? '' : (d.phenomena || '—');
-    els.docWindSpeed.textContent = isWind && d.windSpeed !== '' ? `${d.windSpeed}KT` : '';
-    els.docWindSpeedMax.textContent = isWind && d.windSpeedMax !== '' ? `MAX ${d.windSpeedMax}` : '';
+    els.docWindSpeed.textContent = d.windSpeed !== '' ? `${d.windSpeed}KT` : '';
+    els.docWindSpeedMax.textContent = d.windSpeedMax !== '' ? `MAX ${d.windSpeedMax}` : '';
 
     els.docSource.textContent = d.source || '—';
     els.docObsTime.textContent = d.obsTime ? d.obsTime.toUpperCase() : '—';
